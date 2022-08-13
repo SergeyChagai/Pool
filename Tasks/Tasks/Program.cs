@@ -22,6 +22,11 @@ namespace Tasks
                 this.home = home;
                 this.away = away;
             }
+
+            public override string ToString()
+            {
+                return String.Join(" ", home, away);
+            }
         }
 
         public struct GameStamp
@@ -45,7 +50,7 @@ namespace Tasks
 
             const int OFFSET_MAX_STEP = 3;
 
-            GameStamp[] gameStamps;
+            public GameStamp[] gameStamps;
 
             public Game()
             {
@@ -104,7 +109,33 @@ namespace Tasks
 
             public Score getScore(int offset)
             {
-                return gameStamps.FirstOrDefault(s => s.offset == offset).score;
+                int min = 0;
+                int max = gameStamps.Length;
+                while (min < max)
+                {
+                    var mid = min + ((max - min) / 2);
+                    var stamp = gameStamps[mid];
+                    int comp = stamp.offset.CompareTo(offset);
+                    if (comp < 0)
+                    {
+                        min = mid + 1;
+                    }
+                    else if (comp > 0)
+                    {
+                        max = mid - 1;
+                    }
+                    else
+                    {
+                        return stamp.score;
+                    }
+                }
+                if (min == max
+                    && min < gameStamps.Length
+                    && gameStamps[min].offset.CompareTo(offset) == 0)
+                {
+                    return gameStamps[min].score;
+                }
+                return new Score(0, 0);
             }
         }
     }
